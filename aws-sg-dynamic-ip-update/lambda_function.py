@@ -5,8 +5,8 @@ import socket
 ec2 = boto3.client('ec2')
 
 # Security Group and FQDN configuration
-security_group_id = 'YOUR_SECURITY_GROUP_ID'
-fqdn = 'example.com'
+security_group_id = 'sg-02d30773db2e41006'
+fqdn = 'home.nodbit.com'
 
 def lambda_handler(event, context):
     try:

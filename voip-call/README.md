@@ -3,8 +3,7 @@ Make a VoIP call using Asterisk AMI
 
 ### Usage
 ```bash
-mkdir env
-python -m venv env
+mkdir -p env && python -m venv env
 source env/bin/activate
 python -m pip install setuptools
 python -m pip install -r requirements.txt
