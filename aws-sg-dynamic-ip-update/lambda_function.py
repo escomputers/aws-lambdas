@@ -6,7 +6,9 @@ ec2 = boto3.client('ec2')
 
 # Security Group and FQDN configuration
 security_group_id = 'sg-02d30773db2e41006'
+rule_id = 'sgr-09045b11c86016937'
 fqdn = 'home.nodbit.com'
+
 
 def lambda_handler(event, context):
     try:
@@ -14,7 +16,7 @@ def lambda_handler(event, context):
         ip_address = get_public_ip_from_fqdn(fqdn)
 
         # Update the security group inbound rule
-        update_security_group(security_group_id, ip_address)
+        update_security_group(security_group_id, rule_id, ip_address)
 
         return {
             'statusCode': 200,
@@ -26,6 +28,7 @@ def lambda_handler(event, context):
             'body': f'Error: {str(e)}'
         }
 
+
 def get_public_ip_from_fqdn(fqdn):
     try:
         ip_address = socket.gethostbyname(fqdn)
@@ -33,23 +36,29 @@ def get_public_ip_from_fqdn(fqdn):
     except socket.gaierror:
         raise Exception(f'Could not resolve IP address for FQDN: {fqdn}')
 
-def update_security_group(security_group_id, ip_address):
+
+def update_security_group(security_group_id, rule_id, ip_address):
     try:
-        ec2.authorize_security_group_ingress(
+        ec2.modify_security_group_rules(
             GroupId=security_group_id,
-            IpPermissions=[
+            SecurityGroupRules=[
                 {
-                    'IpProtocol': 'tcp',
-                    'FromPort': 80,  # Port you want to update
-                    'ToPort': 80,
-                    'IpRanges': [
+                    'SecurityGroupRuleId': rule_id,
+                    'SecurityGroupRule':
                         {
-                            'CidrIp': f'{ip_address}/32',  # /32 denotes a single IP address
+                            'IpProtocol': 'TCP',
+                            'FromPort': 8291,
+                            'ToPort': 8291,
+                            'CidrIpv4': f'{ip_address}/32',
                             'Description': 'Updated via Lambda'
-                        },
-                    ],
-                },
-            ],
+                        }
+                }
+            ]
         )
     except Exception as e:
         raise Exception(f'Error updating security group rule: {str(e)}')
+
+
+# ONLY FOR TESTING VIA CLI
+# ip_address = get_public_ip_from_fqdn(fqdn)
+# update_security_group(security_group_id, rule_id, ip_address)
