@@ -1,13 +1,6 @@
 ### Description
 Fetch public IP address from a FQDN and the update an AWS security group inbound rule for "source" field.
 
-### Usage
-```bash
-mkdir -p env && python -m venv env
-source env/bin/activate
-python -m pip install -r requirements.txt
-```
-
 ### Test event
 ```json
 {
