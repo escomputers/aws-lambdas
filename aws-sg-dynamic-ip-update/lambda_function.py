@@ -1,17 +1,18 @@
 import boto3
 import socket
+import json
+
 
 # AWS clients
 ec2 = boto3.client('ec2')
 
-# Security Group and FQDN configuration
-security_group_id = 'sg-02d30773db2e41006'
-rule_id = 'sgr-09045b11c86016937'
-fqdn = 'home.nodbit.com'
-
 
 def lambda_handler(event, context):
     try:
+        security_group_id = event["security_group_id"]
+        rule_id = event["rule_id"]
+        fqdn = event["fqdn"]
+
         # Fetch the public IP address for the FQDN
         ip_address = get_public_ip_from_fqdn(fqdn)
 
