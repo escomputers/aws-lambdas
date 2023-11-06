@@ -1,6 +1,13 @@
 ### Description
 Fetch public IP address from a FQDN and the update an AWS security group inbound rule for "source" field.
 
+### Setup
+Edit these keys and values in lambda_function.py according to desired network ports.
+```python
+  'FromPort': 8291,
+  'ToPort': 8291,
+```
+
 ### Test event
 ```json
 {
