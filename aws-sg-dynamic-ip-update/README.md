@@ -9,3 +9,9 @@ Fetch public IP address from a FQDN and the update an AWS security group inbound
   "fqdn": "home.nodbit.com"
 }
 ```
+
+### Cron expression for EventBridge trigger source
+```
+### every 15 minutes
+rate(15 minutes)
+```
