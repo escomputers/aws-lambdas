@@ -1,5 +1,11 @@
-### Description
-Fetch public IP address from a FQDN and the update an AWS security group inbound rule for "source" field.
+## aws-sg-dynamic-ip-update
+Fetch public IP address from a FQDN and the update an AWS security group inbound rule "source" field.
+
+### Requirements
+- IAM role for EC2 SG group access
+- Timeout: 30secs
+- Memory size: 256MB
+- Tested Runtime: python3.12
 
 ### Setup
 Edit these keys and values in lambda_function.py according to desired network ports.
@@ -8,7 +14,7 @@ Edit these keys and values in lambda_function.py according to desired network po
   'ToPort': 8291,
 ```
 
-### Test event
+### Event example
 ```json
 {
   "security_group_id": "sg-02d30773db2e41006",
@@ -18,7 +24,7 @@ Edit these keys and values in lambda_function.py according to desired network po
 ```
 
 ### Cron expression for EventBridge trigger source
-```
+```bash
 ### every 15 minutes
 rate(15 minutes)
 ```
