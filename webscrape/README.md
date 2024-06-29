@@ -16,7 +16,7 @@ In this example, webscraping is used to fetch job listings from a webpage, filte
     "gmail_address": "gmail-address@gmail.com",
     "url": "https://kube.careers/remote-kubernetes-jobs",
     "s3_filename": "kubecareers-processed_jobs.json",
-    "pattern_to_search": "remote from europe",
+    "patterns_to_search": ["remote from Europe", "remote from Italy"],
     "s3_bucket_name": "s3-bucket-name"
 }
 ```

@@ -143,7 +143,7 @@ def lambda_handler(event: dict, context: dict) -> json:
     filename = event["s3_filename"]
     email_username = event["gmail_address"]
     email_password = os.getenv("GMAIL_APP_PASSWORD")
-    pattern = event["pattern_to_search"]
+    patterns = event["patterns_to_search"]
     s3_bucket_name = event["s3_bucket_name"]
 
     # Retrieve S3 database file content
@@ -166,7 +166,7 @@ def lambda_handler(event: dict, context: dict) -> json:
 
     # Check if any job listing inside all li elements matches the search criteria
     print("Checking job listings for matches...")
-    matched_jobs = filter_job_listings(webpage_list_elements, pattern)
+    matched_jobs = filter_job_listings(webpage_list_elements, patterns)
 
     if matched_jobs:
         print("Found job listings matching search criteria")
@@ -227,7 +227,7 @@ evento = {
     "gmail_address": "emilianos13@gmail.com",
     "url": "https://kube.careers/remote-kubernetes-jobs",
     "s3_filename": "kubecareers-processed_jobs.json",
-    "pattern_to_search": ["remote from Europe", "remote from Italy"],
+    "patterns_to_search": ["remote from Europe", "remote from Italy"],
     "s3_bucket_name": "personal-864430642600",
 }
 contesto = {}
