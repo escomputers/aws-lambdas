@@ -56,7 +56,7 @@ def update_s3_file_content(filecontent: dict, file_name: str, s3_bucket: str):
         raise e
 
 
-def filter_job_listings2(li_elements: list, search_patterns: list) -> dict:
+def filter_job_listings(li_elements: list, search_patterns: list) -> dict:
     """Function for getting desired job listings only if there are matched jobs,
     returns a dictionary containing job listing details"""
     results = {}
@@ -102,36 +102,6 @@ def filter_job_listings2(li_elements: list, search_patterns: list) -> dict:
                     print()
 
                     results[link] = {"title": title, "description": description.strip()}
-
-    return results
-
-
-def filter_job_listings(li_elements: list, search_patterns: list) -> dict:
-    """Function for getting desired job listings only
-    if there are matched jobs, returns a dictionary containing job listing details"""
-    # Init dictionary that will store results
-    results = {}
-    for element in li_elements:
-        for pattern in search_patterns:
-            remote_span = element.select_one(f'span.dotted:-soup-contains("{pattern}")')
-
-            if remote_span:
-                title_tag = element.select_one("p.mv0.f3.lh-title")
-                title = title_tag.get_text().strip()
-                link = title_tag.find("a")["href"]
-                description = " ".join(
-                    span.get_text() for span in element.select("span.dotted")
-                )
-
-                # Print the extracted information
-                print()
-                print(f"Title: {title}")
-                print(f"Link: {link}")
-                print(f"Description: {description.strip()}")
-                print("-----")
-                print()
-
-                results[link] = {"title": title, "description": description.strip()}
 
     return results
 
@@ -196,7 +166,7 @@ def lambda_handler(event: dict, context: dict) -> json:
 
     # Check if any job listing inside all li elements matches the search criteria
     print("Checking job listings for matches...")
-    matched_jobs = filter_job_listings2(webpage_list_elements, pattern)
+    matched_jobs = filter_job_listings(webpage_list_elements, pattern)
 
     if matched_jobs:
         print("Found job listings matching search criteria")
