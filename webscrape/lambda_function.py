@@ -207,7 +207,7 @@ def lambda_handler(event: dict, context: dict) -> json:
 
             # Update S3 database file
             print(f"Updating database file s3://{s3_bucket_name}/{filename}...")
-            # update_s3_file_content(file_content, filename, s3_bucket_name)
+            update_s3_file_content(file_content, filename, s3_bucket_name)
 
             return json.dumps(
                 {
