@@ -1,5 +1,5 @@
 ## webscrape
-Script to scrape a webpage using CSS selectors (AWS Lambda Function version)
+Script to scrape a webpage using a combination of HTML tags and CSS selectors to make the code more tolerant to webpage changes.
 
 In this example, webscraping is used to fetch job listings from a webpage, filter out based on string, if a match is found, send an email. To keep track of already found job listing already found, it uses an S3 file as database for processed jobs.
 

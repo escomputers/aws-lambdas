@@ -29,7 +29,7 @@ def send_email(address: str, password: str, subject: str, emailbody=None):
         # Generate the email body content
         for link, details in emailbody.items():
             parsed_body += f"Title: {details['title']}\n"
-            parsed_body += f"Description: {details['Description']}\n"
+            parsed_body += f"Description: {details['description']}\n"
             parsed_body += f"Link: {link}\n\n"
 
         msg.attach(MIMEText(parsed_body, "plain"))
@@ -56,32 +56,82 @@ def update_s3_file_content(filecontent: dict, file_name: str, s3_bucket: str):
         raise e
 
 
-def filter_job_listings(li_elements: list, search_pattern: str) -> dict:
+def filter_job_listings2(li_elements: list, search_patterns: list) -> dict:
+    """Function for getting desired job listings only if there are matched jobs,
+    returns a dictionary containing job listing details"""
+    results = {}
+
+    for element in li_elements:
+        for pattern in search_patterns:
+            # Try to find the span with the search pattern using CSS selector
+            remote_span = element.select_one(f'span.dotted:-soup-contains("{pattern}")')
+            if not remote_span:
+                # Fallback to using find_all and checking text content
+                spans = element.find_all("span", class_="dotted")
+                remote_span = next(
+                    (span for span in spans if pattern in span.get_text()), None
+                )
+
+            if remote_span:
+                # Try to find the title tag using CSS selector
+                title_tag = element.select_one("p.mv0.f3.lh-title")
+                if not title_tag:
+                    # Fallback to using find method
+                    title_tag = element.find("p", class_="mv0 f3 lh-title")
+
+                if title_tag:
+                    title = title_tag.get_text().strip()
+                    link_tag = title_tag.find("a")
+                    link = link_tag["href"] if link_tag else "No link found"
+
+                    # Collect all span.dotted elements' text for description
+                    description = " ".join(
+                        span.get_text() for span in element.select("span.dotted")
+                    )
+                    if not description:
+                        # Fallback to using find_all if select doesn't return anything
+                        spans = element.find_all("span", class_="dotted")
+                        description = " ".join(span.get_text() for span in spans)
+
+                    # Print the extracted information
+                    print()
+                    print(f"Title: {title}")
+                    print(f"Link: {link}")
+                    print(f"Description: {description.strip()}")
+                    print("-----")
+                    print()
+
+                    results[link] = {"title": title, "description": description.strip()}
+
+    return results
+
+
+def filter_job_listings(li_elements: list, search_patterns: list) -> dict:
     """Function for getting desired job listings only
     if there are matched jobs, returns a dictionary containing job listing details"""
     # Init dictionary that will store results
     results = {}
     for element in li_elements:
-        remote_span = element.select_one(
-            f'span.dotted:-soup-contains("{search_pattern}")'
-        )
+        for pattern in search_patterns:
+            remote_span = element.select_one(f'span.dotted:-soup-contains("{pattern}")')
 
-        if remote_span:
-            title_tag = element.select_one("p.mv0.f3.lh-title")
-            title = title_tag.get_text().strip()
-            link = title_tag.find("a")["href"]
-            description = " ".join(
-                span.get_text() for span in element.select("span.dotted")
-            )
+            if remote_span:
+                title_tag = element.select_one("p.mv0.f3.lh-title")
+                title = title_tag.get_text().strip()
+                link = title_tag.find("a")["href"]
+                description = " ".join(
+                    span.get_text() for span in element.select("span.dotted")
+                )
 
-            # Print the extracted information
-            print("-----")
-            print(f"Title: {title}")
-            print(f"Link: {link}")
-            print(f"Description: {description.strip()}")
-            print("-----")
+                # Print the extracted information
+                print()
+                print(f"Title: {title}")
+                print(f"Link: {link}")
+                print(f"Description: {description.strip()}")
+                print("-----")
+                print()
 
-            results[link] = {"title": title, "Description": description.strip()}
+                results[link] = {"title": title, "description": description.strip()}
 
     return results
 
@@ -146,7 +196,7 @@ def lambda_handler(event: dict, context: dict) -> json:
 
     # Check if any job listing inside all li elements matches the search criteria
     print("Checking job listings for matches...")
-    matched_jobs = filter_job_listings(webpage_list_elements, pattern)
+    matched_jobs = filter_job_listings2(webpage_list_elements, pattern)
 
     if matched_jobs:
         print("Found job listings matching search criteria")
@@ -187,7 +237,7 @@ def lambda_handler(event: dict, context: dict) -> json:
 
             # Update S3 database file
             print(f"Updating database file s3://{s3_bucket_name}/{filename}...")
-            update_s3_file_content(file_content, filename, s3_bucket_name)
+            # update_s3_file_content(file_content, filename, s3_bucket_name)
 
             return json.dumps(
                 {
@@ -207,7 +257,7 @@ evento = {
     "gmail_address": "emilianos13@gmail.com",
     "url": "https://kube.careers/remote-kubernetes-jobs",
     "s3_filename": "kubecareers-processed_jobs.json",
-    "pattern_to_search": "remote from Europe",
+    "pattern_to_search": ["remote from Europe", "remote from Italy"],
     "s3_bucket_name": "personal-864430642600",
 }
 contesto = {}
