@@ -4,6 +4,7 @@ Script to scrape a webpage using a combination of HTML tags and CSS selectors to
 In this example, webscraping is used to fetch job listings from a webpage, filter out based on string, if a match is found, send an email. To keep track of already found job listing already found, it uses an S3 file as database for processed jobs.
 
 ### Requirements
+- S3 bucket
 - Environment variable: `GMAIL_APP_PASSWORD`
 - [IAM role for S3 access](iam_policy.json)
 - Timeout: 90secs

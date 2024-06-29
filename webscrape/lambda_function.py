@@ -221,14 +221,3 @@ def lambda_handler(event: dict, context: dict) -> json:
     return json.dumps(
         {"statusCode": 304, "body": "No job listings match search criteria"}
     )
-
-
-evento = {
-    "gmail_address": "emilianos13@gmail.com",
-    "url": "https://kube.careers/remote-kubernetes-jobs",
-    "s3_filename": "kubecareers-processed_jobs.json",
-    "patterns_to_search": ["remote from Europe", "remote from Italy"],
-    "s3_bucket_name": "personal-864430642600",
-}
-contesto = {}
-lambda_handler(evento, contesto)
